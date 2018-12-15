@@ -33,16 +33,8 @@ class ViewController: UIViewController {
     var answerCorrect : Int = 0
     var answerUser : Int = 0
     
-    var randomHigh: Int = 0
-    var randomLow: Int = 0
-    var randomHighIndex: Int = 0
-    var randomLowIndex: Int = 0
-    
     let congratulateArray = ["Great Job", "Excellent", "Way to go", "Alright", "Right on", "Correct", "Well done", "Awesome","Give me a high five"]
     let retryArray = ["Try again","Oooops"]
-    
-    let bigNumberArray = [8,9]
-    let smallNumberArray = [1,2]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -79,9 +71,6 @@ class ViewController: UIViewController {
     func checkAnswer(){
         getCorrectAnswer()
         answerUser = (answerTxt.text! as NSString).integerValue
-        
-        print(answerCorrect)
-        print(answerUser)
         
         if answerUser == answerCorrect{
             correctAnswers += 1
