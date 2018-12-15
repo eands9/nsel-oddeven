@@ -26,14 +26,12 @@ class ViewController: UIViewController {
     var randomNumA : Int = 0
     var randomNumB : Int = 0
     var randomNumC : Int = 0
-    var randomNumD : Int = 0
-    var firstNum : Double = 0
-    var secondNum : Double = 0
-    var thirdNum : Double = 0
-    var fourthNum : Double = 0
+    var firstNum : Int = 0
+    var secondNum : Int = 0
+
     var questionTxt : String = ""
-    var answerCorrect : Double = 0
-    var answerUser : Double = 0
+    var answerCorrect : Int = 0
+    var answerUser : Int = 0
     
     var randomHigh: Int = 0
     var randomLow: Int = 0
@@ -62,26 +60,30 @@ class ViewController: UIViewController {
     }
     
     func askQuestion(){
-        pickHighNum()
-        pickLowNum()
-        //2 digit questions starting at 100
-        randomNumA = Int.random(in: 10 ..< 51)
-        randomNumD = Int.random(in: 1 ..< 10)
-        randomNumB = randomNumA * 10 + randomHigh
-        randomNumC = randomNumD * 10 + randomLow
+        randomNumA = Int.random(in: 10 ..< 101)
+        randomNumB = Int.random(in: 10 ..< 101)
+        randomNumC = Int(arc4random_uniform(2))
+        
+        pickNumA()
 
+        if randomNumC == 0{
+            questionLabel.text = "How many even numbers between \(firstNum) and \(secondNum)?"
+        }
+        else{
+            questionLabel.text = "How many odd numbers between \(firstNum) and \(secondNum)?"
+        }
         
-        firstNum = Double(randomNumB)
-        secondNum = Double(randomNumC)
         
-        questionLabel.text = "\(randomNumB) X \(randomNumC)"
     }
     
     func checkAnswer(){
-        answerUser = (answerTxt.text! as NSString).doubleValue
-        answerCorrect = firstNum * secondNum
+        getCorrectAnswer()
+        answerUser = (answerTxt.text! as NSString).integerValue
         
-        if answerUser >= answerCorrect * 0.95 && answerUser <= answerCorrect * 1.05 {
+        print(answerCorrect)
+        print(answerUser)
+        
+        if answerUser == answerCorrect{
             correctAnswers += 1
             numberAttempts += 1
             updateProgress()
@@ -94,6 +96,49 @@ class ViewController: UIViewController {
             answerTxt.text = ""
             numberAttempts += 1
             updateProgress()
+        }
+    }
+    
+    /*
+     If looking for even
+     - and both numbers are odd, subtract the two numbers and divide by 2
+     - and both numbers are even, subtract the two numbers and divide by 2 and then subtract 1
+     - and one is even but not the other, subtract the two numbers and then subtract 1 and then divide by 2
+     
+     If looking for odd
+     - and both numbers are even, subtract the two numbers and divide by 2
+     - and both numbers are odd, subtract the two numbers and divide by 2 and then subtract 1
+     - and one is even but not the other, subtract the two numbers and then subtract 1 and then divide by 2
+     */
+    
+    func getCorrectAnswer(){
+        if randomNumC == 0{
+            if firstNum % 2 == 0 && secondNum % 2 == 0{
+                answerCorrect = (((secondNum - firstNum)/2)-1)
+            }
+            else if firstNum % 2 == 0 && secondNum % 2 == 1{
+                answerCorrect = ((((secondNum - 1) - firstNum)/2))
+            }
+            else if firstNum % 2 == 1 && secondNum % 2 == 1{
+                answerCorrect = (((secondNum - firstNum)/2))
+            }
+            else if firstNum % 2 == 1 && secondNum % 2 == 0{
+                answerCorrect = (((secondNum - (firstNum + 1))/2))
+            }
+        }
+        else{
+            if firstNum % 2 == 0 && secondNum % 2 == 0{
+                answerCorrect = ((secondNum - firstNum)/2)
+            }
+            else if firstNum % 2 == 0 && secondNum % 2 == 1{
+                answerCorrect = ((((secondNum - 1) - firstNum)/2))
+            }
+            else if firstNum % 2 == 1 && secondNum % 2 == 1{
+                answerCorrect = ((((secondNum - firstNum)/2)-1))
+            }
+            else if firstNum % 2 == 1 && secondNum % 2 == 0{
+                answerCorrect = ((((secondNum - firstNum)-1)/2))
+            }
         }
     }
     
@@ -125,14 +170,15 @@ class ViewController: UIViewController {
         readMe(myText: retryArray[randomPick])
     }
     
-    func pickHighNum(){
-        randomHighIndex = Int(arc4random_uniform(2))
-        randomHigh = bigNumberArray[randomHighIndex]
-    }
-    
-    func pickLowNum(){
-        randomLowIndex = Int(arc4random_uniform(2))
-        randomLow = smallNumberArray[randomHighIndex]
+    func pickNumA(){
+        if randomNumA < randomNumB{
+            firstNum = randomNumA
+            secondNum = randomNumB + 5
+        }
+        else{
+            firstNum = randomNumB
+            secondNum = randomNumA + 5
+        }
     }
 }
 
